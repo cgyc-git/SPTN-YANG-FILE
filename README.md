@@ -19,3 +19,12 @@ This project defines the YANG files used in SPTN (Software defined Packet Transp
 This repository is created to support the China Mobile (CMCC) SPTN project. 
 
 Any questions about this repository, please contact wangminxue@chinamobile.com, xuyunbin@caict.ac.cn or zhaoxing@caict.ac.cn.
+
+2019年12月30日 提供最新版yang文件。
+与之前相比：
+1，增加了《of-config-1.2-sptn-event.yang》。
+2，删除了《of-config-1.2-sptn-vpls.yang》。
+3，《of-config-1.2-sptn-clock.yang》中的leaf-list system-clock-source-priority-list 增加 ordered-by user;
+4，《of-config-1.2-sptn-lag.yang》将 lag 节点放入 "/of-config:capable-switch/of-config:resources"中，在 lag 节点中 加入 leaf openflow-port。
+5，《of-config-1.2-sptn-link-oam.yang》将 loopback-status 拆分为 loopback-cmd 和 loopback-status。
+6，《of-config-1.2-sptn-port-ext.yang》在 tdm 节点下增加 tdm-e1-status。用于控制器查询 TDM业务性能数据。
