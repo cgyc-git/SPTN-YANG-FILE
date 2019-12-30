@@ -1,0 +1,987 @@
+module of-config-1.2-sptn-device {
+  namespace 'http://chinamobile.com.cn/sdn/sptn/sbi/schema/device' ;
+  prefix "sptn-device";
+
+  import of-config-1.2 { prefix of-config; }
+  import ietf-yang-types { prefix yang; }
+  import ietf-inet-types { prefix inet; }
+
+  organization "SPTN Working Group";
+  contact "SPTN OpenFlow Extensions";
+  description "SPTN Device Yang Module";
+
+  revision "2018-05-09" {
+    description "initial";
+    reference "sptn openflow extensions draft";
+  }
+
+  typedef connector-type {
+        type enumeration {
+            enum "SC" {
+                value 1;
+            }
+            enum "LC" {
+                value 2;
+            }
+       }
+    }
+    typedef fiber-type {
+        type enumeration {
+            enum "single" {
+                value 1;
+            }
+            enum "double" {
+                value 2;
+            }
+       }
+    }
+
+    typedef sfp-present-type {
+        type enumeration {
+            enum "present" {
+                value 1;
+            }
+            enum "notPresent" {
+                value 2;
+            }
+            enum "notSupport" {
+                value 3;
+            }
+       }
+    }
+    typedef opt-module-type {
+        type enumeration {
+            enum "SFP" {
+                value 1;
+            }
+            enum "SFF" {
+                value 2;
+            }
+            enum "XFF" {
+                value 3;
+            }
+            enum "SFP PLUS" {
+                value 4;
+            }
+            enum "XFP" {
+                value 5;
+            }
+            enum "XFP-E" {
+                value 6;
+            }
+            enum "GBIC" {
+                value 7;
+            }
+            enum "XPak" {
+                value 8;
+            }
+            enum "X2" {
+                value 9;
+            }
+            enum "DWDM-SFP" {
+                value 10;
+            }
+            enum "QSFP" {
+                value 11;
+            }
+            enum "300 pin XBI" {
+                value 12;
+            }
+            enum "Unknown" {
+                value 13;
+            }
+       }
+    }
+
+    typedef opt-media-type {
+        type enumeration {
+            enum "singleMode" {
+                value 1;
+            }
+            enum "multiMode" {
+                value 2;
+            }
+       }
+    }
+    typedef opt-laser-status-type {
+        type enumeration {
+            enum "shutdown" {
+                value 1;
+            }
+            enum "open" {
+                value 2;
+            }
+       }
+    }
+
+    typedef opt-ddm-support-type {
+        type enumeration {
+            enum "support" {
+                value 1;
+            }
+            enum "notSupport" {
+                value 2;
+            }
+       }
+    }
+
+    typedef opt-wave-length-type {
+        type enumeration {
+            enum "wavelength_1310nm" {
+                value 1;
+            }
+            enum "wavelength_1550nm" {
+                value 2;
+            }
+            enum "wavelength_850nm" {
+                value 3;
+            }
+            enum "wavelength_1490nm" {
+                value 4;
+            }
+            enum "wavelength_1530nm" {
+                value 5;
+            }
+            enum "wavelength_1610nm" {
+                value 6;
+            }
+            enum "wavelength_unknown" {
+                value 7;
+            }			
+        }
+    }
+
+    typedef port-type {
+        type enumeration {
+            enum "optical" {
+                value 1;
+            }
+            enum "electrical" {
+                value 2;
+            }
+       }
+    }
+
+    typedef node-type {
+        type enumeration {
+            enum "CPE" {
+                value 1;
+            }
+            enum "HUB" {
+                value 2;
+            }
+            enum "Unknown" {
+                value 3;
+            }
+       }
+    }
+
+    typedef admin-status-type {
+        type enumeration {
+          enum "up" {
+              value 1;
+          }
+          enum "down" {
+              value 2;
+          }
+       }
+    }
+
+    typedef oper-status-type {
+        type enumeration {
+          enum "null" {
+              value 1;
+          }
+          enum "initing" {
+              value 2;
+          }
+          enum "upgrating" {
+              value 3;
+          }
+          enum "running" {
+              value 4;
+          }
+          enum "exception" {
+              value 5;
+          }
+       }
+    }
+
+    typedef master-mode-type {
+        type enumeration {
+          enum "master" {
+              value 1;
+          }
+          enum "slave" {
+              value 2;
+          }
+          enum "none" {
+              value 3;
+          }
+       }
+    }
+
+    typedef dev-oper-status-type {
+        type enumeration {
+            enum "up" {
+                value 1;
+            }
+            enum "down" {
+                value 2;
+            }
+       }
+    }
+
+    typedef reset-comoman-type {
+        type enumeration {
+            enum "none" {
+                value 1;
+            }
+            enum "reset" {
+                value 2;
+            }
+       }
+    }
+
+    typedef save-command-type {
+        type enumeration {
+            enum "none" {
+                value 1;
+            }
+            enum "save" {
+                value 2;
+            }
+       }
+    }
+
+    typedef alarm-inverse-mode-type {
+      type enumeration {
+        enum "un-inverse" {
+            value 0;
+            description "Disable alarm-inverse function.you can't enable port alram-inverse ";
+        }
+        enum "automatic" {
+            value 1;
+            description "In automaic mode,you can enable/disable port alram-inverse.
+                  If port isn't used,don't report alarm.when port is used,report alarm normally.";
+        }
+        enum "manual" {
+            value 2;
+            description "In manual mode,you can enable/disable port alram-inverse.
+            Report the inverse alarm status of port.";
+        }
+    }
+} 
+
+
+  grouping manage-vlan-group {
+    container manage-vlan {
+      description
+      "the normal vlan in which packets forward based on L2 mac learning. This 
+      vlan is automaticly created by the switch when powered up. In this
+      vlan, the ip address and default route are configued so that the 
+      switch can connect to the controller, and other deives can use the 
+      vlan as a path to link to controller.";
+
+      leaf vid {
+        type uint32 {
+          range "1..4094";
+        }
+        description
+        "The vid of the vlan, It is predefined by China mobile.";
+      }
+
+      leaf-list port {
+        type leafref {
+          path "/of-config:capable-switch/of-config:resources/of-config:port/of-config:resource-id";
+        }
+        description
+        "A resource identifier of a port of the OpenFlow Capable
+        Switch that the OpenFlow Logical Switch has exclusive access to.
+
+        Elements in this list MUST be unique. This means each
+        port element can only be referenced once.";
+      }
+
+      leaf manage-ip-address {
+        type inet:ip-address;
+        description
+        "Local ip address for the switch. this ip normally got through dhcp server,
+        but the controller can modify it, too.";
+      }
+
+      leaf manage-ip-mask {
+        type uint8 {
+          range "0..32";
+        }
+        description
+        "Ip address mask.";
+      }
+
+      leaf default-route {
+        type inet:ip-address;
+        description
+        "Default route of the switch. this ip normally got through dhcp server,
+        but the controller can modify it, too.";
+      }
+    }
+  }
+
+  grouping OFCardType {
+        leaf slot-num {
+          type uint16;
+          config false;
+          description
+            "The number of the slot.";
+        }
+        leaf card-name {
+          type string;
+          config false;
+          description
+            "The name of the card.";
+        }
+        leaf card-desc {
+          type string;
+          description
+            "The description of the card.";
+        }
+        leaf manufacture-info {
+          type string;
+          config false;
+          description
+            "The manufacture information, for example,the factory information.";
+        }
+        leaf serial-num {
+          type string;
+          config false;
+          description
+              "The vendor-specific serial number string for the
+              card.  The preferred value is the serial number
+              string actually printed on the card itself (if
+              present).";
+        }
+        leaf card-temperature {
+          type string;
+          config false;
+          description
+            "The temperature of the card.";
+        }
+        leaf cpu-utilization {
+          type uint16;
+          config false;
+          description
+            "The cpu utilization of card.The unit is %.";
+        }
+        leaf memory-utilization {
+          type uint16;
+          config false;
+          description
+              "The memory utilization of card.The unit is %.";
+        }
+        leaf cpu-utilization-high-thr {
+          type uint16{
+          range "60..100";
+        }
+         default 80;
+          description
+            "The cpu utilization high alarm threshold of card.The unit is %.";
+        }
+        leaf memory-utilization-high-thr {
+          type uint16{
+            range "60..100";
+          } 
+          default 80;
+          description
+              "The memory utilization high alarm threshold of card.The unit is %.";
+        }   
+        leaf card-temperature-high-thr{
+          type int16{
+            range "-10..60";
+          }
+          default 50;
+          description
+            "The temperature high alarm threshold of the card.The unit is degree Celsius";
+        }
+        leaf card-temperature-low-thr{
+          type int16{
+            range "-10..60";
+          }
+          default 0;
+          description
+            "The temperature high alarm threshold of the card.The unit is degree Celsius";
+        }             
+        leaf oper-status {
+          type oper-status-type;
+          config false;
+          description
+            "The working status of card.";
+        }
+        leaf master-mode {
+          type master-mode-type;
+          config false;
+          description
+              "The master mode, master or slave for main control  or E1 board.";
+        }
+        leaf software-version {
+          type string;
+          config false;
+          description
+              "The vendor-specific software revision string for the
+              card.";
+        }
+        leaf hardware-version {
+          type string ;
+          config false;
+          description
+            "The vendor-specific hardware revision string for the
+              card.  The preferred value is the hardware revision
+              identifier actually printed on the card itself (if
+              present).";
+        }
+        leaf firmware-version {
+          type string;
+          config false;
+          description
+            "The vendor-specific firmware revision string for the
+              card.";
+        }
+        leaf boot-version {
+          type string;
+          config false;
+          description           
+	   "The vendor-specific boot revision string for the card.";
+        }
+        leaf-list port {
+            type leafref {
+                path "/of-config:capable-switch/of-config:resources/of-config:port/of-config:resource-id";
+            }
+            description
+            "Reference to port resources in the Capable Switch.
+            This element associates ports with card.";
+        }
+        uses OFAlarmMaskType;
+    }
+
+    grouping OFSysTimeType {
+        leaf sys-time {
+            type yang:date-and-time;        
+            description
+                "The time of system.The controller can set the system time 
+                 same to the server time.";
+        }
+    }
+
+    grouping OFDevResetType {
+        leaf reset-command {
+            type reset-comoman-type;
+            description
+                "The command of reset the device.";
+        }
+    }
+
+    grouping OFDevSaveType {
+        leaf save-command {
+            type save-command-type;
+            description
+                "The command of reset the device.";
+        }
+    }
+
+
+    grouping OFNodeType {
+        leaf type {
+            type node-type;
+            
+            description
+                "The device type,HUB or CPE (if known) or unknown.";
+        }
+        leaf name {
+            type string {
+                length "1..32";
+            }
+            config false;
+            description
+                "The device name of the vendor specific.";
+        }
+        leaf description {
+            type string;
+            description
+                "A textual description of device.";
+        }
+        leaf vendor {
+            type string;
+            config false;
+            description
+                "The name of the vendor.";
+        }
+        leaf firmware-rev {
+            type string;
+            config false;
+            description
+                "The vendor-specific firmware revision string for the
+              device.";
+        }
+
+        leaf software-rev {
+            type string;
+            config false;
+            description
+                "The vendor-specific software revision string for the
+              device.";
+        }
+        leaf hardware-rev {
+            type string;
+            config false;
+            description
+                "The vendor-specific hardware revision string for the
+              device.  The preferred value is the hardware revision
+              identifier actually printed on the device itself (if
+              present)";
+        }
+        leaf boot-version {
+            type string;
+            config false;
+            description
+                "The boot version.";
+        }
+        leaf oper-status {
+            type dev-oper-status-type;
+            config false; 
+            description
+                "The working status of the device,up or down.";
+        }
+        leaf mac-addr {
+            type yang:mac-address;
+            config false;
+            description
+                "The Mac-address of the device.";
+        }
+        leaf run-time {
+            type uint32;
+            config false;
+            description
+                "The running time of device since power on. Device update this run-time if only the device power down or reboot.";
+        }
+        leaf serial-num {
+            type string;
+            config false;
+            description
+                  "The vendor-specific serial number string for the
+              device.  The preferred value is the serial number
+              string actually printed on the device itself (if
+              present).";
+        }
+	     leaf cpu-utilization {
+          type uint16;
+          config false;
+          description
+            "The cpu utilization of device.The unit is %.";
+        }
+        leaf memory-utilization {
+          type uint16;
+          config false;
+          description
+              "The memory utilization of device.The unit is %.";
+        } 
+	leaf cpu-utilization-high-thr {
+          type uint16;
+         default 100;
+          description
+            "The cpu utilization high alarm threshold of device.The unit is %.";
+        }
+        leaf memory-utilization-high-thr {
+          type uint16;
+          default 80;
+          description
+              "The memory utilization high alarm threshold of device.The unit is %."; 
+	}
+        uses OFSysTimeType;
+        uses OFDevResetType;
+        uses OFDevSaveType;   
+    }
+
+    grouping OFFanType {
+		
+        leaf spdlevel {
+	    config false;
+            type uint32 {
+                range "1..100";
+            }
+            description
+                "Specify the speed level of fan in enforce mode.The unit is %.";
+        }
+		
+        leaf serial-number {
+            config false;
+            type string;
+            description
+              "Specify the identical serial number of current fan card.this 
+              string number is set when the device leaves factory.";
+        }
+		
+        leaf work-state {
+            config false;
+            type enumeration {
+              enum "normal" {
+                value "1";
+              }
+              enum "abnormal" {
+                value "2";
+              }
+            }
+            description
+              "Specify the current state of fan normal(1) means the current fan
+              operate normally; abnormal(2) means the current fan operate abnormally.";
+        }
+		
+        leaf slot {
+            config false;
+            type leafref {
+                path "/of-config:capable-switch/physical-device/card/resource-id";
+            }
+            description
+                "Reference to card resources in the capable-switch.";
+        }
+    }
+	
+    grouping OFPowerType {
+		
+        leaf isexist {
+            config false;  
+            type enumeration {
+                enum "exist" {
+                    value "1";
+                }
+                enum "notexist" {
+                    value "2";
+                }
+            }
+            description
+                "Indicate the power is exist or not exist.";
+        }
+		
+        leaf input-type {
+            config false;
+            type enumeration {
+                enum "unknow" {
+                    value "1";
+                }
+                enum "ac" {
+                    value "2";
+                }
+                enum "dc48" {
+                    value "3";
+                }
+                enum "dc24" {
+                    value "4";
+                }
+            }
+            description
+                "Indicate the input power type.";
+        }
+		
+        leaf slot {
+            config false;
+            type leafref {
+                path "/of-config:capable-switch/physical-device/card/resource-id";
+            }
+            description
+                "Reference to card resources in the capable-switch.";
+        }
+    }
+	
+    grouping OFBannerType {
+        leaf enable {
+           type boolean;
+	   default false;
+           description
+               "Banner enable or disable.";
+        }
+	
+        leaf msgcount {
+            type uint32;
+            description
+                "Count of banner message list.";
+        }
+		
+        list message {
+            key "index";
+  
+            leaf index {             
+		type uint32 {
+                    range "1..10";
+                }
+                description
+                    "Index of message, one banner message upto support 2560 characters, so it needs to create 10 message tables.";
+            }
+		
+            leaf messagebody { 
+		type string {
+                    length "1..256" ;
+                }
+                description
+                    "Banner message input by user.";
+            }
+			
+            leaf headspace {
+	       type uint32 {
+                    range "0..256";
+                }
+                description
+                    "The number of space for the message head.";
+            }
+			
+            leaf tailspace {
+                type uint32 {
+                    range "0..256";
+                }
+                description
+                    "The number of space for the message tail.";
+           }
+        }
+    }
+	
+    grouping physical-device-grouping {
+        container physical-device {
+            description
+                "Including the physical device modules.";
+            container node {
+                uses OFNodeType;
+            }
+            list card {
+                key "resource-id";
+                uses of-config:OFResourceType ;
+                uses OFCardType;
+            }
+            
+            list fan {
+                key "resource-id";
+                uses of-config:OFResourceType ;
+                uses OFFanType;
+            }
+			
+            list power {
+                key "resource-id";
+                uses of-config:OFResourceType ;
+                uses OFPowerType;
+            }
+			
+            container banner {
+                uses OFBannerType;
+            }
+        }    
+        
+    }
+
+    grouping opt-module-grouping {
+        container opt-module {
+            description
+               "The specified attributes of optical module.";
+            leaf opt-connector-type {
+                type connector-type;
+                config false;
+                description
+                   "The connector value indicates the external optical 
+                    or electrical cable connector provided as the media interface";
+            }
+            leaf opt-single-double {
+                type fiber-type;
+                config false;
+                description
+                   "The type of fiber:single or double";
+            }
+            leaf opt-rx-wave-length {
+                type opt-wave-length-type;
+                config false;
+                description
+                   "The receive wavelength.";
+            }
+            leaf opt-tx-wave-length {
+                type opt-wave-length-type;
+                config false;
+                description
+                    "The transmit wavelength.";
+            }
+            leaf opt-bit-rate {
+                type uint32;
+                config false;
+                description
+                   "The nominal bit rate (BR, nominal) is specified in units of KBits/s.";
+            }
+            leaf opt-distance {
+                type uint32;
+                config false;
+                description
+                   "The optDistance is specified in units of Meter";
+            }
+            leaf opt-rx-power {
+                type int32;
+                config false;
+                description
+                    "The power is specified in units of dBm.";
+            }
+            leaf opt-tx-power {
+                type int32;
+                config false;
+                description
+                    "The power is specified in units of dBm.";
+            }
+            leaf opt-temperature {
+                type uint32;
+                config false;
+                description
+                    "unit:1 ℃";
+            }
+            leaf opt-bias-current {
+                type uint32;
+                config false;
+                description
+                    "The transmit bias current is specified in units of mA.";
+            }
+            leaf opt-voltage {
+                type uint32;
+                config false;
+                description
+                    "The optVoltage is specified in units of V.";
+            }
+            leaf opt-sfp-present {
+                type sfp-present-type;
+                config false;
+                description
+                    "The status of optical module present.The status includes present,notPresent or notSupport";
+            }
+            leaf opt-module-type {
+                type opt-module-type;
+                config false;
+                description
+                    "The type of optical module according to package type.";
+            }
+            leaf opt-media-type {
+                type opt-media-type;
+                config false;
+                description
+                    "The media type of optical module,singleMode or multiMode.";
+            }
+
+            leaf opt-laser-status {
+                type opt-laser-status-type;
+                config false;
+                description
+                    "The laser status of optical module.shutdown or open.";
+            }
+            leaf opt-ddm-support {
+                type opt-ddm-support-type;
+                config false;
+                description
+                    "The support condition of ddm.support or notSupport.";
+            }
+            leaf opt-vendor-name {
+                type string;
+                config false;
+                description
+                    "The vendor name shall be the full name of the corporation or
+                    a commonly accepted abbreviation of the name of the corporation.";
+            }
+            leaf opt-vendor-pn {
+                type string;
+                config false;
+                description
+                    "The vendor part number (vendor PN).";
+            }
+            leaf opt-vendor-sn {
+                type string;
+                config false;
+                description
+                    "The vendor serial number (vendor sn).";
+            }
+            leaf opt-vendor-reversion {
+                type string;
+                config false;
+                description
+                    "The vendor revision number (vendor rev).";
+            }
+            uses OFAlarmMaskType;
+
+            leaf opt-tx-power-high-thr{
+                type int32{
+                  range "-40..9";
+                }
+                description
+                    "The power threshold is specified in units of dBm.";
+            }
+            leaf opt-tx-power-low-thr{
+                type int32{
+                  range "-40..9";
+                }              
+                description
+                    "The power threshold is specified in units of dBm.";
+            }
+            leaf opt-rx-power-high-thr{
+                type int32{
+                  range "-40..9";
+                }
+                description
+                    "The power threshold is specified in units of dBm.";
+            }
+            leaf opt-rx-power-low-thr{
+                type int32{
+                  range "-40..9";
+                } 
+                description
+                    "The power threshold is specified in units of dBm.";
+            }            
+            leaf opt-temperature-high-thr {
+                type int32{
+                  range "-40..125";
+                } 
+                description
+                    "unit:1 ℃";
+            }    
+            leaf opt-bias-current-high-thr {
+                type uint32{
+                  range "0..131";
+                }
+                description
+                    "The transmit bias current threshold is specified in units of mA.";
+            } 
+          }                
+	   }
+
+    grouping OFAlarmMaskType {
+      leaf alarm-mask {
+        type boolean;
+        description "Alarm mask configuration by port position.true means open alarm mask";
+        default "false";
+      }
+    }
+
+    grouping port-attributes {
+      leaf port-type {
+        type port-type;
+        config false;
+        description
+        "The type of interface.optical or electrical.";
+      }
+      leaf alarm-inverse-mode {
+        type alarm-inverse-mode-type;
+        default "automatic";
+      }
+      uses OFAlarmMaskType;
+    }
+
+  augment "/of-config:capable-switch/of-config:logical-switches" {
+    uses manage-vlan-group;
+  }
+
+  augment "/of-config:capable-switch" {
+      uses physical-device-grouping;
+  }
+
+  augment "/of-config:capable-switch/of-config:resources/of-config:port" {
+      uses opt-module-grouping;
+  } 
+
+  augment "/of-config:capable-switch/of-config:resources/of-config:port" {
+      uses port-attributes;
+  } 
+}

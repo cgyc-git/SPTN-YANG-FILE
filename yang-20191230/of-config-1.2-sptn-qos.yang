@@ -1,0 +1,142 @@
+module of-config-1.2-sptn-qos {
+     namespace 'http://chinamobile.com.cn/sdn/sptn/sbi/schema/qos' ;
+     prefix "sptn-qos";
+
+     import of-config-1.2 { prefix of-config; }
+     import ietf-yang-types { prefix yang; }
+     import of-config-1.2-sptn-oam { prefix sptn-oam; }
+
+     organization "SPTN Working Group";
+     contact "SPTN OpenFlow Extensions";
+     description "SPTN QOS Yang Module";
+
+     revision "2016-02-08" {
+       description "initial";
+       reference "sptn openflow extensions draft";
+     }
+
+     typedef port-scheduling-mode{
+       type enumeration {
+         enum "SP" {
+           value 1;
+           description "Strict Priority";
+         }
+         enum "RR" {
+           value 2;
+           description "Round Robin";
+         }
+         enum "WRR" {
+           value 3;
+           description "Weighted Round Robin";
+         }
+         enum "WDRR" {
+           value 4;
+           description "Weighted Deficit Round Robin";
+         }
+         enum "SP_WRR" {
+           value 5;
+           description "Strict Priority Plus Weighted Round Robin";
+         }
+         enum "SP_WDRR" {
+           value 6;
+           description "Strict Priority Plus Weighted Deficit Round Robin";
+         }
+       }
+     }
+
+     typedef queue-congestion-mode{
+       type enumeration {
+         enum "TAIL_DROP" {
+           value 1;
+           description "Tail drop (SPTN_QDC_TAIL_DROP)";
+         }
+         enum "WRED" {
+           value 2;
+           description "Weighted Random Early Detection (SPTN_QDC_WRED).";
+         }
+      }
+    }
+
+    grouping wred-drop-curve {
+       description "Curve points for WRED.";
+       leaf start {
+         type uint32;
+         description "The queue utilization at which random early detection begins, as a percent.";
+       }
+       leaf end {
+         type uint32;
+         description "The queue utilization after which packets are always dropped, as a percent.";
+       }
+       leaf slope {
+         type uint32;
+         description "The slope of the curve, as the horizontal ratio (N to 1).";
+       }
+    }
+
+
+augment "/of-config:capable-switch/of-config:resources/of-config:port" {
+
+       leaf scheduling-mode {  
+         type port-scheduling-mode;
+         }
+
+    } // augment
+
+augment "/of-config:capable-switch/of-config:resources/of-config:queue/of-config:properties" {
+
+         leaf scheduling-priority {
+           type "sptn-oam:priority" ;
+           description "Priority if needed for SP scheduling modes.";
+         }
+
+         leaf scheduling-weight {
+           type uint32;
+           description "Weight if needed for WRR or WDRR scheduling mode.";
+         }
+
+         leaf congestion-mode {
+           type queue-congestion-mode;
+           default "TAIL_DROP";
+         }
+
+         choice td-or-wred {
+
+         case wred {
+
+         container green-drop-curve {
+           when "congestion-mode = WRED" ;
+           uses wred-drop-curve ;
+         }
+
+         container yellow-drop-curve {
+           when "congestion-mode = WRED" ;
+           uses wred-drop-curve ;
+         }
+
+         container red-drop-curve {
+           when "congestion-mode = WRED" ;
+           uses wred-drop-curve ;
+         }
+
+         } // wred
+
+         case td {
+
+         leaf drop-threshold {
+           when "congestion-mode = TAIL_DROP" ;
+           type uint32 {
+             range "1..100";
+           }
+           default "100" ;
+           description "maximum queue size for tail drop.";
+         }
+
+         } // td
+         } // td-or-wred
+
+
+  } // augment
+
+
+}  // module
+

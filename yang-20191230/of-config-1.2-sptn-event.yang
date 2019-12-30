@@ -1,0 +1,63 @@
+module of-config-1.2-sptn-event {
+	namespace 'http://chinamobile.com.cn/sdn/sptn/sbi/schema/event';
+	prefix "sptn-event";
+
+	import of-config-1.2 { prefix of-config; }
+    import ietf-yang-types { prefix yang-types; } 
+	import of-config-1.2-sptn-alarm { prefix sptn-alm; }
+	
+	organization "SPTN Working Group";
+	contact "SPTN OpenFlow Extensions";
+	description "SPTN EVENT Yang Module";
+
+	revision "2019-06-06" {
+	description "initial";
+	reference "sptn openflow extensions draft";
+	}
+  
+    /*
+    * Groupings
+    */    
+    grouping event {
+		uses "of-config:OFResourceType" {
+			description "Resource-id of the resource raising the event - port, MEG, etc." ;
+		}  
+		
+		leaf SequenceNo {
+			type uint32 {
+			range "1..4294967295";
+			}
+		}
+		leaf eventcode {
+			type uint32 ;
+			description "event code" ;
+		}
+		leaf severity {
+			type "sptn-alm:severity-classification";
+			description "severity classification" ;
+		}
+		leaf timestamp {
+			type "yang-types:timestamp";
+			description "the timestamp is the number of seconds since 2000/01/01 00:00:00" ;
+		}
+		leaf description {
+			type string {
+			length "1..255" ;
+			}
+			description "the event description" ;
+		}
+		description "event";
+    }
+  
+    /*
+    * Notifications
+    */    
+    notification event-notification {
+        container event {
+            uses event;
+            description "event-notification";
+        }
+        description "event-notification";
+    }
+
+}

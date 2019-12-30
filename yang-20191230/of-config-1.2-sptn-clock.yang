@@ -1,0 +1,316 @@
+module of-config-1.2-sptn-clock {
+  namespace 'http://chinamobile.com.cn/sdn/sptn/sbi/schema/clock'  ;
+  prefix "sptn-clock";
+
+  import of-config-1.2 { prefix of-config; }
+
+  organization "SPTN Working Group";
+  contact "SPTN OpenFlow Extensions";
+  description "SPTN Device Yang Module";
+
+  revision "2019-06-06" {
+    description "initial";
+    reference "sptn openflow extensions draft";
+  }
+
+  typedef clock-source-select-mode-type {
+    type enumeration {
+        enum "auto" {
+          value 1;
+        }
+        enum "local" {
+          value 2;
+        }
+        enum "ext2M" {
+          value 3;
+        } 
+        enum "freerun" {
+          value 4;
+        } 
+      }
+  }
+
+  typedef bits-type {
+    type enumeration {
+      enum KBPS {
+        description "none";
+      }
+      enum KHZ {
+        description "none";
+      }
+    }
+    description "none";
+  }
+
+  typedef run-mode-type {
+      type enumeration {
+        enum "unknown" {
+          value 1;
+        }
+        enum "lockEx2M" {
+          value 2;
+        } 
+        enum "lockLocal" {
+          value 3;
+        } 
+        enum "freerun" {
+          value 4;
+        }
+        enum "holdover" {
+          value 5;
+        }
+        enum "preLocked"{
+          value 6;
+        }
+        enum "lostLocked" {
+          value 7;
+        }
+      }
+  }
+
+  typedef reversion-mode-type {
+    type enumeration {
+      enum "REVERTIVE" {
+        value 1;
+      }
+      enum "NON-REVERTIVE" {
+        value 2;
+      } 
+    }
+  }
+
+  typedef switch-type {
+   type enumeration {
+      enum "Lockout" {
+        value 1;
+      }
+      enum "Manual switch" {
+        value 2;
+      }
+      enum "Forced switch" {
+        value 3;
+      }
+    }
+  }
+
+  typedef clock-quality-level {
+    type enumeration {
+      enum QL_PRC {
+        description "none";
+      }
+      enum QL_SSU_A {
+        description "none";
+      }
+      enum QL_SSU_B {
+        description "none";
+      }
+      enum QL_EEC1 {
+        description "none";
+      }
+      enum QL_DNU {
+        description "none";
+      }
+      enum QL_PRTC {
+        description "none";
+      }
+      enum QL_ePRTC {
+        description "none";
+      }
+      enum QL_eEEC {
+        description "none";
+      }
+      enum QL_NONE {
+        description "none";
+      }               
+    }
+    description "Use the clock quality levels listed in section 5.4.1 of G.781 (08/2017). The corresponding SSM codes and enhanced SSM codes for SyncE refer to table 11-7 and table 11-8 of G.8264 (08/2017)";
+  }
+  
+  typedef ssm-mode-type {
+    type enumeration {
+      enum MANUAL {
+        description "none";
+      }
+      enum AUTOMATIC {
+        description "none";
+      }
+    }
+    description "none";
+  }
+
+  grouping clock-grouping {
+    container clock {
+      description
+        "";
+        leaf ssm-output-enable-status {
+          type boolean;
+        
+          description
+            "Indicate whether to send SSM messages or not.";
+        }
+        leaf ssm-in-information {
+          type clock-quality-level;
+        
+          description
+            "Current input SSM quality levels used by the port. The SSM quality level can be set manually or automatically. The port should have SSM quality levels for input and output respectively. ";
+        }
+        leaf ssm-out-information {
+          type clock-quality-level;
+        
+          description
+            "Current output SSM quality levels used by the port. The SSM quality level can be set manually or automatically. The port should have SSM quality levels for input and output respectively. ";
+        }
+        leaf ssm-mode {
+          type ssm-mode-type;
+         
+          description
+            "Indicate whether to use manual or automatic input and output SSM quality levels. SSM mode should be set for input and output respectively.";
+        }
+        leaf ssm-configuration {
+          type clock-quality-level;
+          description "The input and output SSM quality levels set manually. The SSM quality levels should be manually configurable for input and output respectively.";
+        }
+      
+    }
+  }
+
+  grouping ext2M-clock-grouping {
+      leaf external-port-enable-status {
+        type boolean;
+      
+        description
+          "The enable status of external port.";
+      }
+      leaf bits-type-input {
+        type bits-type;
+      
+        description
+          "The input type of this port, such as 2048kb/s or 2048kHz.";
+      }
+      leaf bits-type-output {
+        type bits-type;
+      
+        description
+          "The output type of this port, such as 2048kb/s or 2048kHz.";
+      }
+      leaf ssm-sa-bit {
+        type uint64;
+      
+        description
+          "Indicate which sa-bit bits are used for carrying input and output SSM quality levels. The port should have sa-bit bits for input and output respectively.";
+      }
+      leaf ssm-out-threshold{
+        type clock-quality-level;
+        config false;
+        description "The external port stops transmitting when the SSM quality level is lower than the threshold.";
+      }
+      leaf ssm-information{
+        type clock-quality-level;
+        description "Current input and output SSM quality levels used by the port. The port should have SSM quality levels for input and output respectively.";
+      }
+      leaf ssm-mode {
+        type ssm-mode-type;
+      
+        description "Indicate whether to use manual or automatic input and output SSM quality levels. SSM mode should be set for input and output respectively.";
+      }
+      leaf ssm-configuration{
+        type clock-quality-level;
+        description
+          "The manual ssm information.";
+      }
+  }
+
+  container global-clock {
+      description
+        "The global attributes of clock.";
+      leaf clock-source-sel-mode {
+         type clock-source-select-mode-type;
+       
+         description
+           "auto,local,ext2M,freerun";
+      } 
+      leaf-list port {
+        type leafref {
+          path "/of-config:capable-switch/of-config:resources/of-config:port/of-config:resource-id";
+        }
+        description "The port can be configed when the clock source select mode is local";
+      }
+      
+      leaf wait-to-revert-time {
+        type uint16;
+      
+        description
+          "";
+      }
+
+      leaf holdoff-time {
+        type uint16;
+      
+        description
+          "";
+      }
+      leaf-list system-clock-source-priority-list {
+        type string;
+             ordered-by user;
+   
+        description
+          "The list of port priority.";
+      }
+      leaf switch-type {
+        type switch-type;
+      
+        description
+          "The protection switch type.";
+      }
+      leaf ssm-enable-status {
+        type boolean;
+      
+        description
+          "The ssm enable,true:enable false:disable";
+      }
+      leaf unk-status {
+        type boolean;
+      
+        description
+          "The device unk ssm enable";
+      }
+
+      container clock-status {
+        description
+          "The atrributes of clock status.";
+        leaf run-mode {
+          type run-mode-type;
+          config false;
+          description
+              "";
+        }
+        leaf reversion-mode {
+          type reversion-mode-type;
+          config false;
+          description
+          "The protection switch reversion mode.";
+        }
+
+        leaf current-source-port-id {
+          type leafref {
+            path "/of-config:capable-switch/of-config:resources/of-config:port/of-config:resource-id";
+          }
+          config false;
+          description "The selected eth clock.";
+        }
+        
+      }
+
+      container ext2M-clock {
+        description
+          "The atrributes of ext2M clock.";
+        uses ext2M-clock-grouping;
+      }
+      
+  }
+
+  augment "/of-config:capable-switch/of-config:resources/of-config:port" {
+      uses clock-grouping;
+  } 
+
+}

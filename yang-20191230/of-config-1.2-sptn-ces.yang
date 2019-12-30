@@ -1,0 +1,136 @@
+module of-config-1.2-sptn-ces {
+    namespace 'http://chinamobile.com.cn/sdn/sptn/sbi/schema/sptn/ces' ;
+    prefix "sptn-ces";
+
+    import of-config-1.2 { 
+        prefix of-config; 
+    }
+
+    organization "SPTN Working Group";
+    
+    description "SPTN CES Yang Module";
+
+    revision "2019-06-06" {
+       description "initial";
+    }
+
+    typedef encapsulation-type {
+        type enumeration {
+         enum "raw" {
+           value 0;
+           description "raw";
+         }
+         enum "tag" {
+           value 1;
+           description "tag";
+         }
+       }
+    }
+
+    typedef role-type{
+        type enumeration{
+            enum root{
+                value 0;
+            }
+            enum leaf{
+                value 1;
+            }
+        }
+    }
+
+    typedef cos-type {
+        type enumeration{
+            enum cs7{
+                value 1;
+            }
+            enum cs6{
+                value 2;
+            }
+            enum ef{
+                value 3;
+            }
+        }
+    }
+
+    typedef ces-encapsulation-type {
+        type enumeration{
+            enum SAToP{
+                value 1;
+            }
+            enum CESoPSN{
+                value 2;
+            }
+        }
+    }
+
+    grouping ces-grouping {
+         list ces {
+            key "resource-id";
+        
+            description
+                "";
+            uses of-config:OFResourceType;
+
+            leaf name {
+                type string;
+            
+                description
+                    "";
+            }
+
+            leaf ces-id {
+                type uint32;
+            
+                description
+                    "The logical port id related to the openflow table.";
+            }
+            leaf uni-port {
+                type leafref {
+                    path "/of-config:capable-switch/of-config:resources/of-config:port/of-config:resource-id";
+                }
+                description
+                    "The E1 port path. ";
+            }
+
+            leaf timeslot {
+                type uint32;
+            
+                description
+                    "";
+            }
+
+            leaf rtp-enable {
+                type boolean;
+            
+                description
+                    "true:enable false:disable";
+            }
+
+            leaf encapsulation-type {
+                type ces-encapsulation-type;
+            
+                description
+                    "";
+            }
+            leaf jitter-buffer {
+                type uint32;
+            
+                description
+                    "The size of jitter buffer.";
+            }
+            leaf payload-size {
+                type uint16;
+            
+                description
+                    "payload size.";
+            }
+        }
+
+    }
+
+    container sptn-ces {
+        description
+            "";
+        uses ces-grouping;
+    } 
+ }
