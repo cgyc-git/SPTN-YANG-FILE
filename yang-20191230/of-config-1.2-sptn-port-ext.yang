@@ -1,0 +1,480 @@
+module of-config-1.2-sptn-port-ext {
+  namespace 'http://chinamobile.com.cn/sdn/sptn/sbi/schema/port/ext' ;
+  prefix "sptn-port-ext";
+
+  import of-config-1.2 { prefix of-config; }
+
+  organization "SPTN Working Group";
+  contact "SPTN OpenFlow Extensions";
+  description "SPTN Port Extensions Yang Module";
+
+  revision "2019-12-27" {
+    description "initial";
+    reference "sptn openflow extensions draft";
+  }
+
+  typedef als-control-mode-type {
+      type enumeration {
+          enum "open" {
+              value 1;
+          }
+          enum "shutdown" {
+              value 2;
+          }
+          enum "als" {
+              value 3;
+          }  
+       }
+  }
+
+  typedef loopback-type {
+      type enumeration {
+          enum "innerLoopback" {
+              value 1;
+          }
+          enum "externalLoopback" {
+              value 2;
+          } 
+          enum "noLoopback" {
+              value 3;
+          }
+      }
+  }
+
+  typedef port-speed-type {
+      type enumeration {
+          enum "E1" {
+              value 1;
+          }
+          enum "STM-1" {
+              value 2;
+          } 
+      } 
+  }
+
+  typedef vlan-tag-type {
+    type enumeration {
+      enum "tag" {
+          value 1;
+      }
+      enum "untag" {
+          value 2;
+      } 
+    }
+  }
+
+  typedef sdh-port-type {
+    type enumeration {
+      enum "STM-1" {
+          value 1;
+      }
+      enum "STM-4" {
+          value 2;
+      }
+      enum "STM-16" {
+          value 3;
+      }  
+    }
+  }
+
+  typedef enable-type {
+    type enumeration {
+      enum "enable" {
+          value 1;
+      }
+      enum "disable" {
+          value 2;
+      } 
+      enum "autoEnable" {
+          value 3;
+      } 
+    } 
+  }
+
+  typedef vc-type {
+    type enumeration {
+      enum "vc12" {
+          value 1;
+      }
+      enum "vc3" {
+          value 2;
+      }  
+    } 
+  }
+
+  typedef ces-clock-mode-type {
+    type enumeration {
+      enum "local" {
+        value 1;
+      }
+      enum "dcr" {
+        value 2;
+      } 
+      enum "acr" {
+        value 3;
+      } 
+      enum "loopback" {
+        value 4;
+      } 
+    } 
+  }
+
+  typedef frame-mode-type {
+    type enumeration {
+      enum "unframed" {
+        value 1;
+      }
+      enum "pcm30" {
+        value 2;
+      } 
+      enum "pcm31" {
+        value 3;
+      }  
+    } 
+  }
+  
+  grouping tdm-e1-status-grouping {
+    container tdm-e1-status {
+      description
+        "The tdm performance status.";
+      leaf es {
+        type uint64;
+        config false;
+        description
+          "The error seconds.";
+      }
+      leaf ses {
+        type uint64;
+        config false;
+        description
+          "The severely error seconds.";
+      }
+
+      leaf uas {
+        type uint64;
+        config false;
+        description
+          "The unavailable seconds."; 
+      }
+
+      leaf cv {
+        type uint64;
+        config false;
+        description
+          "The Code Violation."; 
+      }
+    }
+  }
+
+  grouping tdm-grouping {
+    container tdm {
+      description
+        "The attributes of tdm.";
+
+      leaf pipe-enable {
+        type boolean;
+      
+        description
+          ""; 
+      }
+      leaf pipe-num {
+        type uint16;
+      
+        description
+          "";
+      }
+      leaf speed-type {
+        type port-speed-type;
+      
+        description
+          "The value is E1.";
+      }
+      leaf frame-mode {
+        type frame-mode-type;
+      
+        description
+          "The frame mode.";
+      }
+      leaf crc-enable {
+        type enable-type;
+      
+        description
+          "1:enable 2:disable";
+      }
+      leaf clock-recovery-enable {
+        type enable-type;
+      
+        description
+          "1:enable 2:disable";
+      }
+      leaf ces-clock-mode {
+        type ces-clock-mode-type;
+      
+        description
+          "";
+      }
+      uses tdm-status-grouping;
+    }
+  }
+
+  grouping port-ext-grouping {
+      leaf vlan-tag {
+        type vlan-tag-type;
+      
+        description
+          "tag,untag";
+      }
+      uses port-loopback-grouping;
+      uses port-als-grouping;
+
+  }
+
+  grouping port-loopback-grouping {
+        container port-loopback {
+          description
+            "The attributes of loopback.";
+          leaf loop-type {
+            type loopback-type;
+          
+            description
+              "";
+          } 
+        }
+  }
+
+  grouping port-als-grouping {
+      container port-als {
+        description
+          "The attributes of eth port als";
+
+          leaf control-mode {
+            type als-control-mode-type;
+          
+            description
+              "The control mode type.";
+          }
+          leaf enable {
+            type boolean;
+          
+            description
+              "true:enable false:disable";
+          }
+          leaf control-status {
+            type als-control-mode-type;
+            config false;
+            description
+              "";
+          }
+        
+      }
+  }
+
+  grouping sdh-port-grouping {
+    leaf sdh-port-type {
+      type sdh-port-type;
+      config false;
+      description
+        "The type of sdh port.STM-1,STM-4,STM-16.";
+    }
+    leaf monitor-enable {
+      type enable-type;
+    
+      description
+        "Sdh port monitor enable.1:enable 2:disable 3:autoEnable.";
+    }
+    leaf dcc-enable {
+      type enable-type;
+    
+      description
+        "DCC enable.1:enable 2:disable";
+    }
+    leaf dcc-byte-select {
+      type uint32;
+    
+      description
+        "";
+    }
+
+    leaf path-num {
+      type uint16;
+    
+      description
+        "The num of path.";
+    }
+    uses regx-overhead-grouping;
+  }
+
+  grouping regx-overhead-grouping {
+    container regx-overhead {
+      description
+        "The information of regx overhead.";
+      leaf j0-tx {
+        type string;
+      
+        description
+          "The transmit J0 bytes of regeneration section.";
+      }
+      leaf j0-exp-tx {
+        type string;
+      
+        description
+          "The transmit exception J0 bytes of regeneration section.";
+      }
+      leaf j0-rx {
+        type string;
+      
+        description
+          "The receive J0 bytes of regeneration section.";
+      }
+    }
+  }
+
+  container high-order-path-config {
+      description
+        "The information of high path.";
+    list sdh-high-path{
+      key "high-path-id";
+    
+      description
+        "";
+    
+      leaf high-path-id {
+        type uint32;
+    
+        description
+          "";
+      }
+      uses high-order-path-grouping;
+    }
+      
+  }
+
+  grouping high-order-path-grouping {
+    leaf j1-tx {
+      type string;
+      
+      description
+          "The transmit J1 bytes of regeneration section.";
+    }
+    leaf j1-exp-tx {
+        type string;
+      
+        description
+          "The transmit exception J1 bytes of regeneration section.";
+    }
+    leaf j1-rx {
+        type string;
+      
+        description
+          "The receive J1 bytes of regeneration section.";
+    }
+    leaf c2-tx {
+        type string;
+      
+        description
+          "The transmit C2 bytes of regeneration section.";
+    }
+    leaf c2-exp-tx {
+        type string;
+      
+        description
+          "The transmit C2 exp bytes of regeneration section.";
+    }
+    leaf c2-rx {
+        type string;
+      
+        description
+          "The receive C2 bytes of regeneration section.";
+    }
+    leaf port {
+      type leafref {
+        path "/of-config:capable-switch/of-config:resources/of-config:port/of-config:resource-id";
+      }
+      description
+      "The related port ref of the high order path. ";
+    }
+  }
+
+  container lower-order-path-vcc {
+      description
+        "The information of lower path.";
+    list sdh-lower-path{
+      key "vcc-id";
+    
+      description
+        "";
+    
+      leaf vcc-id {
+        type uint32;
+    
+        description
+          "";
+      }
+      uses lower-order-path-grouping;
+    }
+      
+  }
+
+  grouping lower-order-path-grouping {
+    leaf port {
+      type leafref {
+        path "/of-config:capable-switch/of-config:resources/of-config:port/of-config:resource-id";
+      }
+      description
+      "The related port ref of the lower order path. ";
+    }
+    leaf high-path-id {
+      type string;
+      description
+      "The related high path id of the lower order path. ";
+    }
+    leaf vc-type {
+      type vc-type;
+    
+      description
+        "vc12,vc3";
+    }
+    leaf j2-tx {
+      type string;
+    
+      description
+        "";
+    }
+    leaf j2-exp-tx {
+      type string;
+    
+      description
+        "";
+    }
+    leaf j2-rx {
+      type string;
+    
+      description
+        "";
+    }
+    leaf v5-rx {
+      type string;
+    
+      description
+        "";
+    }
+    leaf v5-tx {
+      type string;
+    
+      description
+        "";
+    }
+
+  }
+
+  augment "/of-config:capable-switch/of-config:resources/of-config:port" {
+      uses tdm-grouping;
+  }  
+
+  augment "/of-config:capable-switch/of-config:resources/of-config:port" {
+      uses port-ext-grouping;
+  }
+  augment "/of-config:capable-switch/of-config:resources/of-config:port" {
+      uses sdh-port-grouping;
+  }  
+}

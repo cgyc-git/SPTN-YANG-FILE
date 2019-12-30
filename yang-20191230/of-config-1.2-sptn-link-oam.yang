@@ -1,0 +1,467 @@
+module of-config-1.2-sptn-link-oam {
+  namespace 'http://chinamobile.com.cn/sdn/sptn/sbi/schema/link/oam'  ;
+  prefix "sptn-link-oam";
+
+  import of-config-1.2 { prefix of-config; }
+  import ietf-yang-types { prefix yang; }
+
+  organization "SPTN Working Group";
+  contact "SPTN OpenFlow Extensions";
+  description "SPTN Device Yang Module";
+
+  revision "2019-12-27" {
+    description "initial";
+    reference "sptn openflow extensions draft";
+  }
+
+  typedef enable-type {
+      type enumeration {
+        enum "enable" {
+          value 1;
+        }
+        enum "disable" {
+          value 2;
+        } 
+      }
+  }
+
+  typedef operate-status-type {
+      type enumeration {
+        enum "disabled" {
+          value 1;
+        }
+        enum "linkFault" {
+          value 2;
+        } 
+        enum "passiveWait" {
+          value 3;
+        }
+        enum "activeSendLocal" {
+          value 4;
+        }
+        enum "sendLocalAndRemote" {
+          value 5;
+        }
+        enum "sendLocalAndRemoteOk" {
+          value 6;
+        } 
+        enum "oamPeeringLocallyRejected" {
+          value 7;
+        }
+        enum "oamPeeringRemotelyRejected" {
+          value 8;
+        }
+        enum "operational" {
+          value 9;
+        }
+        enum "nonOperHalfDuplex" {
+          value 10;
+        }
+      }
+  }
+
+  typedef mode-type {
+      type enumeration {
+        enum "passive" {
+          value 1;
+        }
+        enum "active" {
+          value 2;
+        } 
+        enum "unknown"{
+          value 3;
+        }
+      }
+  }
+
+  typedef loopback-cmd-type {
+    type enumeration {
+        enum "initiatingLoopback" {
+          value 1;
+        } 
+        enum "terminatingLoopback" {
+          value 2;
+        } 
+      }
+  }
+  
+    typedef loopback-status-type {
+    type enumeration {
+        enum "noLoopback" {
+          value 1;
+        }
+        enum "remoteLoopback"{
+          value 2;
+        }
+        enum "localLoopback"{
+          value 3;
+        }
+        enum "unknown" {
+          value 4;
+        } 
+      }
+  }
+
+
+  typedef handing-type {
+    type enumeration {
+        enum "ignore" {
+          value 1;
+        }
+        enum "process" {
+          value 2;
+        } 
+       
+      }
+  }
+  grouping link-oam-grouping {
+    container link-oam {
+      description
+        "";
+      uses oam-local-grouping;
+      uses oam-peer-grouping;
+      uses oam-loopback-grouping;
+      uses oam-status-grouping;
+      uses oam-event-grouping;
+    }
+  }
+
+  grouping oam-local-grouping {
+    container local-entity {
+      description
+        "The attributes of oam entity.";
+      leaf admin-state {
+        type enable-type;
+      
+        description
+          "The oam protocal enable status.";
+      }
+      leaf work-mode {
+        type mode-type;
+      
+        description
+          "The mode of oam.passive,active";
+      }
+      container oam-entity-status {
+        description
+          "The status attributes";
+        leaf oper-status {
+          type operate-status-type;
+          config false;
+          description
+            "";
+        }
+        leaf pdu-size {
+          type uint32;
+          config false;
+          description
+            "The oam pdu size.";
+        }
+        leaf config-revision {
+          type uint32;
+          config false;
+          description
+            "";
+        }
+      }
+    }
+  }
+
+  grouping oam-peer-grouping {
+    container peer-entity {
+      description
+        "";
+        leaf peer-mac-address {
+          type yang:mac-address;
+          config false;
+          description
+            "The peer mac address.";
+        }
+        leaf peer-vendor-id {
+          type string;
+          config false;
+          description
+            "The vendor id of peer device.";
+        }
+        leaf peer-vendor-info {
+          type string;
+          config false;
+          description
+            "The vendor description of peer device";
+        }
+        leaf peer-working-mode {
+          type mode-type;
+          config false;
+          description
+            "The working mode of peer device.";
+        }
+        leaf pdu-size {
+          type uint32;
+          config false;
+          description
+            "The oam pdu size.";
+        }
+        leaf config-revision {
+          type uint32;
+          config false;
+          description
+            "";
+        }
+        
+    }
+  }
+
+  grouping oam-loopback-grouping {
+    container oam-loopback {
+      description
+        "The oam loopback information.";
+      leaf loopback-cmd {
+        type loopback-cmd-type;
+      
+        description
+          "The loopback  command.";
+      }
+      leaf loopback-status {
+        type loopback-status-type;
+		config false;
+        description
+          "The loopback status.";
+      }
+      leaf rx-handing {
+        type handing-type;
+      
+        description
+          "ignore,process";
+      }
+    }
+  }
+
+  grouping oam-status-grouping {
+    container oam-status {
+      description
+        "The oam loopback information.";
+      leaf frames-tx {
+        type uint32;
+        config false;
+        description
+          "The transmite frame count.";
+      }
+      leaf frames-rx {
+        type uint32;
+        config false;
+        description
+          "The receive frame count.";
+      }
+
+      leaf event-notification-frames-rx {
+        type uint32;
+        config false;
+        description
+          "The receive event notification  frame count."; 
+      }
+
+      leaf event-notification-frames-tx {
+        type uint32;
+        config false;
+        description
+          "The transmite event notification  frame count."; 
+      }
+      leaf dul-event-notification-frames-tx {
+        type uint32;
+        config false;
+        description
+          "The transmite duplicate event notification  frame count."; 
+      }
+      leaf dul-event-notification-frames-rx {
+        type uint32;
+        config false;
+        description
+          "The receive duplicate event notification  frame count."; 
+      }
+
+      leaf loopback-control-rx {
+        type uint32;
+        config false;
+        description
+          ""; 
+      }
+
+      leaf loopback-control-tx {
+        type uint32;
+        config false;
+        description
+          ""; 
+      }
+
+      leaf variable-request-rx {
+        type uint32;
+        config false;
+        description
+          ""; 
+      }
+
+      leaf variable-request-tx {
+        type uint32;
+        config false;
+        description
+          ""; 
+      }
+
+      leaf variable-response-rx {
+        type uint32;
+        config false;
+        description
+          ""; 
+      }
+
+      leaf variable-response-tx {
+        type uint32;
+        config false;
+        description
+          ""; 
+      }
+
+      leaf org-specific-tx {
+        type uint32;
+        config false;
+        description
+          ""; 
+      }
+
+      leaf org-specific-rx {
+        type uint32;
+        config false;
+        description
+          ""; 
+      }
+
+      leaf unsupported-codes-tx {
+        type uint32;
+        config false;
+        description
+          ""; 
+      }
+
+      leaf unsupported-codes-rx {
+        type uint32;
+        config false;
+        description
+          ""; 
+      }
+      leaf lost-frames-rx {
+        type uint32;
+        config false;
+        description
+          ""; 
+      }
+    }
+  }
+
+  grouping oam-event-grouping {
+    container oam-event {
+      description
+        "The oam event config.";
+      leaf err-period-window-hi {
+        type uint32;
+      
+        description
+          "";
+      }
+      leaf err-period-window-lo {
+        type uint32;
+      
+        description
+          "";
+      }
+      leaf err-period-threshold-hi {
+        type uint32;
+      
+        description
+          "";
+      }
+      leaf err-period-threshold-lo {
+        type uint32;
+      
+        description
+          "";
+      }
+      leaf err-sys-period-event-enable {
+        type enable-type;
+      
+        description
+          "";
+      }
+      leaf err-sys-frame-period-window {
+        type uint32;
+      
+        description
+          "";
+      }
+      leaf err-sys-frame-period-threshold {
+        type uint32;
+      
+        description
+          "";
+      }
+      leaf err-frame-period-event-enable {
+        type enable-type;
+      
+        description
+          "";
+      }
+      leaf err-frame-window{
+        type uint32;
+      
+        description
+          "";
+      }
+      leaf err-frame-threshold{
+        type uint32;
+      
+        description
+          "";
+      }
+      leaf err-frame-event-enable {
+        type enable-type;
+      
+        description
+          "";
+      }
+      leaf err-frame-secs-summary-window{
+        type uint32;
+      
+        description
+          "";
+      }
+      leaf err-frame-secs-summary-threshold{
+        type uint32;
+      
+        description
+          "";
+      }
+      leaf err-frame-secs-summary-enable {
+        type enable-type;
+      
+        description
+          "";
+      }
+      leaf dying-gasp-enable{
+        type enable-type;
+      
+        description
+          "";
+      }
+      leaf critical-event-enable{
+        type enable-type;
+      
+        description
+          "";
+      }
+    }
+  }
+
+  augment "/of-config:capable-switch/of-config:resources/of-config:port" {
+      uses link-oam-grouping;
+  }
+ 
+}

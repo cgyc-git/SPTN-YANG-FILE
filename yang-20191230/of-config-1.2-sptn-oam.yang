@@ -1,0 +1,1638 @@
+module of-config-1.2-sptn-oam {
+     namespace 'http://chinamobile.com.cn/sdn/sptn/sbi/schema/oam' ;
+     prefix "sptn-oam";
+
+     import of-config-1.2 { prefix of-config; }
+     import ietf-yang-types { prefix yang; }
+
+     organization "SPTN Working Group";
+     contact "SPTN OpenFlow Extensions";
+     description "SPTN OAM Yang Module";
+
+     revision "2016-01-16" {
+       description "initial";
+       reference "sptn openflow extensions draft";
+     }
+
+     typedef direction {
+       type enumeration {
+         enum "up" {
+           value 1;
+           description "The direction to the partner is through the switch";
+         }
+         enum "down" {
+           value 2;
+           description "The direction to the partner is at egress";
+         }
+       }
+     }
+
+     typedef pm-role {
+       type enumeration {
+         enum "initiator" {
+           value 0;
+           description "Initiator.";
+         }
+         enum "responder" {
+           value 1;
+           description "Responder.";
+         }
+         enum "both" {
+           value 2;
+           description "both.";
+         }
+       }
+     }
+
+     typedef mip-creation {
+       type enumeration {
+         enum "none" {
+           value 1;
+           description "No MIPs can be created for this MEG";
+         }
+         enum "automatic" {
+           value 2;
+           description "MIPs are automatically created if there is a MEP at the next lower active MD-level.";
+         }
+         enum "manual" {
+           value 3;
+           description "MIPs can be manually created only if there is a MEP at the next lower active MD-level.";
+         }
+       }
+       description "An enumerated value indicating whether the management entity can
+       create MHFs (MIP Half Function) for this MEG.";
+     }
+
+     typedef mip-type {
+       type enumeration {
+         enum "node" {
+           value 1;
+         }
+         enum "interface" {
+           value 2;
+         }
+       }
+     }
+
+     typedef tool-types{
+       type enumeration {
+         enum "CCM" {
+           value 0;
+         }
+         enum "LM" {
+           value 1;
+         }
+         enum "SLM" {
+           value 2;
+         }
+       }
+     }
+
+     typedef rmep-id {
+       type string ;
+       description "48-bit MEP Id";
+     }
+
+     typedef openflow-mp-id {
+       type uint32 ;
+       description "OpenFlow pipeline field that connects the OpenFlow dataplane with a configured Maintenance Point.";
+     }
+
+     typedef admin-state {
+       type enumeration {
+         enum "lock" {
+           value 1;
+         }
+         enum "normal" {
+           value 2;
+         }
+       }
+     }
+
+     typedef ccm-period {
+       type enumeration {
+         enum "Invalid" {
+           value 0;
+         }
+         enum "3.33MS" {
+           value 1;
+           description "Default for protection";
+         }
+         enum "10MS" {
+           value 2;
+         }
+         enum "100MS" {
+           value 3;
+         }
+         enum "1S" {
+           value 4;
+         }
+         enum "10S" {
+           value 5;
+         }
+         enum "1MIN" {
+           value 6;
+         }
+         enum "10MIN" {
+           value 7;
+         }
+       }
+       description "Values for CC packet transmit interval.";
+     }
+
+     typedef dm-period {
+       type enumeration {
+         enum "0" {
+           value 0;
+         }
+         enum "10 MS" {
+           value 1;
+         }
+         enum "100 MS" {
+           value 2;
+         }
+         enum "1 SEC" {
+           value 3;
+         }
+         enum "1 MIN" {
+           value 4;
+         }
+         enum "10 MIN" {
+           value 5;
+         }
+       }
+       description "Message period values for delay measurements.";
+     }
+
+     typedef message-period {
+       type enumeration {
+         enum "0" {
+           value 0;
+         }
+         enum "1 SEC" {
+           value 1;
+         }
+         enum "1 MIN" {
+           value 2;
+         }
+       }
+       description "Message period values for AIS, LCK, and CSF PDUs.";
+     }
+
+     typedef loopback-period {
+       type enumeration {
+         enum "0" {
+           value 0;
+         }
+         enum "1 SEC" {
+           value 1;
+         }
+         enum "10 SEC" {
+           value 2;
+         }
+         enum "1 MIN" {
+           value 3;
+         }
+         enum "10 MIN" {
+           value 4;
+         }
+       }
+       description "Loopback message period values.";
+     }
+
+
+     typedef priority {
+       type enumeration {
+         enum "BE" {
+           value 0;
+         }
+         enum "AF1" {
+           value 1;
+         }
+         enum "AF2" {
+           value 2;
+         }
+         enum "AF3" {
+           value 3;
+         }
+         enum "AF4" {
+           value 4;
+         }
+         enum "EF" {
+           value 5;
+         }
+         enum "CS6" {
+           value 6;
+         }
+         enum "CS7" {
+           value 7;
+         }
+       }
+       description "PHB values for priority.";
+     }
+
+     typedef destination-mp-type {
+       type enumeration {
+         enum "MEP" {
+           value 0;
+           description "ICC-based MEP Id.";
+         }
+         enum "MIP" {
+           value 1;
+           description "ICC-based MIP Id.";
+         }
+       }
+     }
+
+     typedef protection-scheme {
+       type enumeration {
+         enum "bi-directional" {
+           value 0;
+         }
+         enum "uni-directional" {
+           value 1;
+         }
+       }
+     }
+
+     typedef protection-architecture {
+       type enumeration {
+         enum "1-to-1" {
+           value 0;
+         }
+         enum "1-plus-1" {
+           value 1;
+         }
+         enum "1-to-N" {
+           value 2;
+         }
+       }
+     }
+
+     typedef lm-dm-state {
+       type enumeration {
+         enum "stopped" {
+           value 0;
+         }
+         enum "running" {
+           value 1;
+         }
+       }
+     }
+
+     typedef test-tlv-type {
+       type enumeration {
+         enum "Null signal - all zero without CRC-32" {
+           value 0;
+         }
+         enum "Null signal - all zero with CRC-32" {
+           value 1;
+         }
+         enum "PRBS 2power31-1 without CRC-32" {
+           value 2;
+         }
+         enum "PRBS 2power31-1 with CRC-32" {
+           value 3;
+         }
+       }
+     }
+
+     typedef meg-level {
+       type uint16 {
+         range "0..7";
+       }
+     }
+
+     typedef ps-requests {
+       type enumeration {
+         enum "Clear" {
+           value 0;
+         }
+         enum "Lockout of protection" {
+           value 1;
+         }
+         enum "Lockout of work" {
+           value 12;
+         }
+         enum "Signal fail for protection" {
+           value 2;
+         }
+         enum "forced switch" {
+           value 3;
+         }
+         enum "Signal fail for work" {
+           value 4;
+         }
+         enum "Signal degrade" {
+           value 5;
+         }
+         enum "Manual switch" {
+           value 6;
+         }
+         enum "Wait-to-restore" {
+           value 7;
+         }
+         enum "Exercise" {
+           value 8;
+         }
+         enum "Reverse request" {
+           value 9;
+         }
+         enum "Do not revert" {
+           value 10;
+         }
+         enum "No request" {
+           value 11;
+         }
+       }
+     }
+
+     typedef ps-status {
+       type enumeration {
+         enum "switch_to_work" {
+           value 1;
+         }
+         enum "switch_to_protection" {
+           value 2;
+         }
+         enum "protection_group_deleted" {
+           value 3;
+         }
+       }
+     }
+
+     typedef lb-discovery {
+       type enumeration {
+         enum "none" {
+           value 0;
+           description "The current loopback is not for discovery";
+         }
+         enum "ingress" {
+           value 1;
+           description "The current loopback is for discovery";
+         }
+         enum "egress" {
+           value 2;
+           description "The current loopback is for discovery";
+
+         }
+       }
+     }
+
+    grouping mlp-config {
+      description "MLP Config class" ;
+      leaf role {
+        type enumeration {
+          enum "protection" {
+            value 0;
+          }
+          enum "working" {
+            value 1;
+          }
+        }
+      }
+      leaf direction {
+        type enumeration {
+          enum "rx" {
+            value 1;
+            description "The direction is from the partner";
+          }
+          enum "tx" {
+            value 2;
+            description "The direction is to the partner";
+          }
+        }
+        description "direction";
+      }
+    }
+
+    grouping ccm-grouping {
+       description "Common CCM attributes.";
+       leaf period {
+         type ccm-period;
+         default "3.33MS";
+         description "The transmit interval for CCM frames.";
+       }
+       leaf enable {
+         type boolean;
+         default "true";
+         description "The object indicates whether CCM frames can be sent by the MEG";
+       }
+       leaf nbrOfSentCCM {
+         type yang:counter32;
+         config false;
+       }
+       leaf nbrOfRcvCCM {
+         type yang:counter32;
+         config false;
+       }
+    }
+
+    grouping lb-grouping {
+      leaf discovery {
+        type lb-discovery;
+        default "none";
+      }
+      leaf testTlvPresent {
+        type boolean;
+        default "false";
+      }
+      leaf testTlvType {
+        type test-tlv-type ;
+        default "Null signal - all zero without CRC-32";
+      }
+      leaf destination {
+        type rmep-id;
+        mandatory true;
+      }
+      leaf destinationType {
+        type destination-mp-type;
+        mandatory true;
+      }
+      leaf period {
+        type loopback-period;
+        description "This object indicates the interval for sending LBM packets.";
+      }
+      leaf nbrOfPkt {
+        type uint32;
+        default 1;
+      }
+      leaf pktLength {
+        type uint32;
+        default 64;
+      }
+      leaf enable {
+        type boolean;
+        default false;
+      }
+      leaf resultOK {
+        type boolean;
+        config false;
+      }
+      leaf nbrOfLbrIn {
+        type yang:counter32;
+        config false;
+      }
+      leaf nbrOfLbrInOutOfOrder {
+        type yang:counter32;
+        config false;
+      }
+      leaf nbrOfLbrBadMsdu {
+        type yang:counter32;
+        config false;
+      }
+    }
+
+    grouping lck-csf-ais-grouping {
+      leaf period {
+        type message-period;
+        default "1 SEC";
+      }
+      leaf enable {
+        type boolean;
+        default "false";
+      }
+    }
+
+    grouping tst-grouping {
+      leaf role {
+        type enumeration {
+          enum "initiator" {
+            value 0;
+            description "Initiator.";
+          }
+          enum "responder" {
+            value 1;
+            description "Responder.";
+          }
+        }
+        mandatory true;
+      }
+      leaf type {
+        type enumeration {
+          enum "in-service" {
+            value 0;
+          }
+          enum "out-of-service" {
+            value 1;
+          }
+        }
+        mandatory true;
+      }
+      leaf destination {
+        type rmep-id;
+        mandatory true;
+      }
+      leaf interval { 
+        type uint32 {
+          range "0..60000000";
+        }
+        default "1000000";
+        description "Test interval in microseconds.";
+      }
+      leaf duration {
+        type uint16 {
+          range "0..3600";
+        }
+        default "60";
+        description "Test duration in seconds.";
+      }
+      leaf pktLength {
+        type uint32 {
+          range "64..9600";
+         }
+         default 64;
+      }
+      leaf enable {
+        type boolean;
+        default "false";
+      }
+      leaf testTlvType {
+        type test-tlv-type;
+        default "Null signal - all zero without CRC-32";
+      }
+      leaf nbrOfTestOut {
+        type yang:counter32;
+        config false;
+      }
+      leaf nbrOfTestIn {
+        type yang:counter32;
+        config false;
+      }
+      leaf nbrOfTstInOutOfOrder {
+        type yang:counter32;
+        config false;
+      }
+      leaf nbrOfTstInCrcError {
+        type yang:counter32;
+        config false;
+      }
+      leaf nbrOfTstInBerError {
+        type yang:counter32;
+        config false;
+      }
+    }
+
+    grouping lm-dm-grouping {
+     leaf destinationType {
+        type destination-mp-type ;
+        mandatory true;
+      }
+      leaf destination {
+        description "2 bytes for ICC-based MEP Id, 14 bytes for ICC-based MIP Id.";
+        type string;
+        mandatory true;
+      }
+      leaf enable {
+        type boolean;
+        default "false";
+      }
+    }
+
+    grouping proactive-lm-grouping {
+      uses "lm-dm-grouping";
+      leaf toolTypes {
+        type tool-types;
+        default "CCM";
+      }
+      leaf period {
+        type ccm-period;
+        default "3.33MS";
+      }
+      list pro-lm-pm-15min-24hr {
+        config false;
+        description "Read only values.";
+        leaf xN_FLR {
+          description "Maximum Near-end Frame Loss Ratio, in milli-percent.";
+          type uint32;
+        }
+        leaf aN_FLR {
+          description "Average Near-end Frame Loss Ratio, in milli-percent.";
+          type uint32;
+        }
+        leaf mN_FLR {
+          description "Minimum Near-end Frame Loss Ratio, in milli-percent.";
+          type uint32;
+        }
+        leaf xF_FLR {
+          description "Maximum Far-end Frame Loss Ratio, in milli-percent.";
+          type uint32;
+        }
+        leaf aF_FLR {
+          description "Average Far-end Frame Loss Ratio, in milli-percent.";
+          type uint32;
+        }
+        leaf mF_FLR {
+          description "Minimum Far-end Frame Loss Ratio, in milli-percent.";
+          type uint32;
+        }
+      }
+    }
+
+    grouping on-demand-lm-grouping {
+      uses "lm-dm-grouping";
+      leaf toolTypes {
+        type enumeration {
+          enum "LM" {
+            value 1;
+          }
+          enum "SLM" {
+            value 2;
+          }
+        }
+        default "LM";
+      }
+      leaf period {
+        type ccm-period;
+        default "3.33MS";
+      }
+      leaf role {
+        type pm-role;
+        default "both";
+      }
+      leaf state {
+        type lm-dm-state;
+        config false;
+      }
+      list od-lm-pm-snapshot {
+        config false;
+        description "Read only values.";
+        leaf tN_TFCnt {
+          description "Total Near-end transmitted frames since the single-ended LM initiated.";
+          type yang:counter32;
+        }
+        leaf tN_LFCnt {
+          description "Total Near-end lost frames since the single-ended LM initiated.";
+          type uint32;
+        }
+        leaf tF_TFCnt {
+          description "Total Far-end transmitted frames since the single-ended LM initiated.";
+          type yang:counter32;
+        }
+        leaf tF_LFCnt {
+          description "Total Far-end lost frames since the single-ended LM initiated.";
+          type uint32;
+        }
+        leaf tN_FLR {
+          description "Total Near-end Frame Loss Ratio since the single-ended LM initiated, in milli-percent.";
+          type uint32;
+        }
+        leaf tF_FLR {
+          description "Total Far-end Frame Loss Ratio since the single-ended LM initiated, in milli-percent.";
+          type uint32;
+        }
+        leaf sLMCnt {
+          description "Number of successful loss measurements.";
+          type yang:counter32;
+        }
+        leaf yLMCnt {
+          description "Number of unsuccessful loss measurements.";
+          type yang:counter32;
+        }
+      }
+    }
+
+    grouping proactive-dm-grouping {
+      uses "lm-dm-grouping";
+      leaf period {
+        type dm-period;
+        default "1 SEC";
+      }
+      leaf frameLen {
+        type uint32;
+        default 64;
+      }
+      list pro-dm-pm-15min-24hr {
+        config false;
+        description "Read only values.";
+        leaf xB_FD {
+          description "Maximum Bi-directional Frame Delay, in microseconds.";
+          type uint32;
+        }
+        leaf aB_FD {
+          description "Average Bi-directional Frame Delay, in microseconds.";
+          type uint32;
+        }
+        leaf mB_FD {
+          description "Minimum Bi-directional Frame Delay, in microseconds.";
+          type uint32;
+        }
+        leaf xN_FDV {
+          description "Maximum Near-end Frame Delay Variation, in microseconds.";
+          type uint32;
+        }
+        leaf aN_FDV {
+          description "Average Near-end Frame Delay Variation, in microseconds.";
+          type uint32;
+        }
+        leaf mN_FDV {
+          description "Minimum Near-end Frame Delay Variation, in microseconds.";
+          type uint32;
+        }
+        leaf xF_FDV {
+          description "Maximum Far-end Frame Delay Variation, in microseconds.";
+          type uint32;
+        }
+        leaf aF_FDV {
+          description "Average Far-end Frame Delay Variation, in microseconds.";
+          type uint32;
+        }
+        leaf mF_FDV {
+          description "Minimum Far-end Frame Delay Variation, in microseconds.";
+          type uint32;
+         }
+       }
+    }
+
+    grouping on-demand-dm-grouping {
+      uses "lm-dm-grouping";
+      leaf period {
+        type dm-period;
+        default "1 SEC";
+      }
+      leaf frameLen {
+        type uint32;
+        default 64;
+      }
+      list od-dm-pm-snapshot {
+        config false;
+        description "Read only values.";
+        leaf tN_FD {
+          description "i-th on-demand frame delay measurement result in near-end direction, in microseconds.";
+          type uint32;
+        }
+        leaf tF_FD {
+          description "i-th on-demand frame delay measurement result in near-end direction, in microseconds.";
+          type uint32;
+        }
+        leaf tB_FD {
+          description "i-th on-demand frame delay measurement result in near-end direction, in microseconds.";
+          type uint32;
+        }
+        leaf elapsedTime {
+          description "Elapsed time since beginning of delay measurement, in 10 ms.";
+          type yang:timeticks;
+        }
+        leaf sFDMCnt {
+          description "Number of successful delay measurements until now.";
+          type yang:counter32;
+        }
+        leaf uFDMCnt {
+          description "Number of unsuccessful delay measurements until now.";
+          type yang:counter32;
+        }
+      }
+    }
+
+    grouping protection-status {
+       leaf lastApsTx {
+         type string;
+         description "Last APS PDU transmitted.";
+       }
+       leaf lastApsRx {
+         type string;
+         description "Last APS PDU received.";
+       }
+       leaf lastPsRequestExecuted {
+         type ps-requests ;
+       }
+       leaf currentPsStatus {
+         type ps-status ;
+       }
+       leaf switchOverCount {
+         type yang:counter32;
+         description "Number of switchovers since the system starts";
+       }
+       leaf lastSwitchOverTime {
+         type yang:timestamp;
+         description "Time tick since last switch protection is executed";
+       }
+    }
+
+augment "/of-config:capable-switch/of-config:resources" {
+
+       list Ethernet_MEG {
+         key "resource-id";
+
+         uses "of-config:OFResourceType" ;
+
+         leaf index {
+           type uint32;
+           description "Local Id for MEG.";
+         }
+
+         leaf nameFormat {
+           type uint16;
+           description "ICC name format, only permissible value is 0.";
+           default 0;
+         }
+
+         leaf name {
+           type string {
+             length "1..48";
+           }
+           mandatory true;
+           description "48 byte MEG Id, including format and length bytes";
+         }
+
+         leaf level {
+           type meg-level;
+           default 4;
+         }
+
+         leaf managedInstanceType {
+           description "managedInstance type";
+           type enumeration {
+             enum "Ethernet" {
+               value 0;
+               description "Type is MPLS-TP Section (between MPLS LSRs).";
+             }
+             enum "VPWS" {
+               value 1;
+               description "Type is an end-to-end LSP (between MPLS LERs).";
+             }
+           }
+           default "VPWS";
+         }
+
+         leaf primaryVid {
+           type uint16;
+         }
+
+         leaf mipCreation {
+           type mip-creation;
+           default "automatic";
+         }
+
+         choice mep-or-mip {
+
+         case mep {
+
+         container Local_MEP {
+           description "Ethernet Local MEP";
+           leaf openFlowMpId {
+             type openflow-mp-id;
+             mandatory "true";
+           }
+           leaf mepId {
+             type uint16 {
+               range "0..8191";
+             }
+             mandatory true;
+             description "Local MEP identity.";
+           }
+           leaf interfaceType {
+             type enumeration {
+               enum "physical port" {
+                 value 0;
+               }
+               enum "LAG group" {
+                 value 1;
+               }
+             }
+             default "physical port";
+           }
+           leaf ifNum {
+             type uint32;
+             description "Interface number.";
+             mandatory true;
+           }
+           leaf macAddress {
+             type yang:mac-address;
+             mandatory true;
+           }
+           leaf direction {
+             type direction ;
+             default "up";
+           }
+           leaf enable {
+             type boolean;
+             default "false";
+           }
+
+           container CCM {
+             description "CCM";
+             uses "ccm-grouping";
+
+             leaf priority {
+               type priority;
+               default "CS7";
+             }
+
+             list MEP_CCM_Database {
+               config false;
+               leaf rMepId {
+                 type uint16 {
+                   range "0..8191";
+                 }
+               }
+               leaf rMepState {
+                 type enumeration {
+                   enum "idle" {
+                     value 1;
+                   }
+                   enum "Start" {
+                     value 2;
+                     description "The timer has not expired since the state machine was reset and no valid CCM has yet been received.";
+                   }
+                   enum "Failed" {
+                     value 3;
+                     description "The timer has expired both since the state machine was reset and since a valid CCM was received.";
+                   }
+                   enum "Ok" {
+                     value 4;
+                     description "The timer has not expired since a valid CCM was received.";
+                   }
+                 }
+               }
+               leaf macAddress {
+                 type yang:mac-address;
+               }
+               leaf lastUpdateTime {
+                 type yang:timestamp;
+               }
+             }
+           }
+
+           list LB {
+             key "instance";
+             description "Loopback configuration.";
+             leaf instance {
+               type uint32;
+               description "Loopback instance.";
+               mandatory true;
+             }
+             uses "lb-grouping" ;
+
+             leaf priority {
+               type priority;
+               default "CS7";
+             }
+
+             leaf dropEligibility {
+               type boolean;
+               default "false";
+             }
+
+             leaf macAddress {
+               type yang:mac-address ;
+             }
+
+           }
+
+           list TST {
+             key "instance";
+             leaf instance {
+               type uint32;
+               description "Test instance.";
+               mandatory true;
+             }
+             uses "tst-grouping";
+
+             leaf priority {
+               type priority;
+               default "CS7";
+             }
+
+             leaf dropEligibility {
+               type boolean;
+               default "false";
+             }
+           }
+
+           container AIS {
+             description "Alarm indication suppression message configuration.";
+             uses "lck-csf-ais-grouping";
+
+             leaf priority {
+               type priority;
+               default "CS7";
+             }
+
+             leaf clientMegLevel {
+               type meg-level;
+               mandatory true;
+             }
+           }
+
+           container LCK {
+             description "Lock report message configuration.";
+             uses "lck-csf-ais-grouping";
+
+             leaf priority {
+               type priority;
+               default "CS7";
+             }
+
+             leaf clientMegLevel {
+               type meg-level;
+               mandatory true;
+             }
+           }
+
+           container CSF {
+             description "Client signal fail message configuration.";
+             uses "lck-csf-ais-grouping";
+
+             leaf priority {
+               type priority;
+               default "CS7";
+             }
+
+           }
+
+           container LT {
+             description "Link trace message configuration.";
+             leaf destination {
+               type yang:mac-address;
+               mandatory true;
+             }
+             leaf priority {
+               type priority;
+               default "CS7";
+             }
+             leaf ttl {
+               type uint8;
+               default 10;
+             }
+             leaf enable {
+               type boolean;
+               default false;
+             }
+             leaf resultOk {
+               type boolean;
+               config false;
+             }
+             leaf nbrOfUnexpectedLtrIn {
+               type uint32;
+               config false;
+             }
+             list LT_Reply {
+               description "Link trace reply database (Read-Only).";
+               config false;
+               leaf sequenceNumber {
+                 type uint32;
+               }
+               leaf receiveOrder{
+                 type uint32;
+               }
+               leaf isForwarded {
+                 type boolean;
+               }
+               leaf terminalMep {
+                 type boolean;
+               }
+               leaf lastTransactionId {
+                 type uint64;
+               }
+               leaf nextTransactionId {
+                 type uint64;
+               }
+               leaf ltrRelayAction {
+                 type uint32;
+               }
+               leaf ltrIngressAction {
+                 type uint32;
+               }
+               leaf ltrIngressAddress {
+                 type yang:mac-address;
+               }
+               leaf ltrIngressPortIdSubtype {
+                 type uint32;
+               }
+               leaf ltrIngressPortId {
+                 type uint32;
+               }
+               leaf ltrEngressAction {
+                 type uint32;
+               }
+               leaf ltrEngressAddress {
+                 type yang:mac-address;
+               }
+               leaf ltrEngressPortIdSubtype {
+                 type uint32;
+               }
+               leaf ltrEngressPortId {
+                 type uint32;
+               }
+               leaf ltrOrgSpecificTlv {
+                 type string {
+                   length "1..1500";
+                 }
+               }
+               leaf ltrSenderIdTlv {
+                 type string {
+                   length "1..1500";
+                 }
+               }
+             }
+           }
+
+           container Proactive_LM {
+             description "Proactive Loss Management configuration.";
+
+             leaf priority {
+               type priority;
+               default "CS7";
+             }
+
+             uses "proactive-lm-grouping";
+           }
+
+           container OnDemand_LM {
+             description "On Demand Loss Management configuration.";
+
+             leaf priority {
+               type priority;
+               default "CS7";
+             }
+             uses "on-demand-lm-grouping";
+
+           }
+
+           container Proactive_DM {
+             description "Proactive Delay Management configuration.";
+
+             leaf priority {
+               type priority;
+               default "CS7";
+             }
+
+             uses "proactive-dm-grouping";
+           } 
+
+           container ONDemand_DM {
+             description "On Demand Delay Measurement configuration.";
+
+             leaf priority {
+               type priority;
+               default "CS7";
+             }
+
+             uses "on-demand-dm-grouping";
+           }
+         }
+
+         list Remote_MEP {
+           key "openFlowMpId";
+           leaf openFlowMpId {
+             type openflow-mp-id;
+             mandatory true;
+             description "Pipeline metadata associating PDU with remote MEP.";
+           }
+           leaf rMepId {
+             mandatory true;
+             type rmep-id ;
+           }
+           leaf mepId {
+             mandatory true;
+             type uint16 ;
+           }
+         }
+
+         list Remote_MIP {
+           key "openFlowMpId";
+           leaf openFlowMpId {
+             type openflow-mp-id ;
+             mandatory true;
+             description "Pipeline metadata associating PDU with remote MIP.";
+           }
+           leaf macAddress {
+             type yang:mac-address ;
+             mandatory true;
+           }
+         }
+
+        } // case mep
+
+        case mip {
+
+         list Local_MIP {
+           key "openFlowMpId";
+           leaf openFlowMpId {
+             type openflow-mp-id;
+             mandatory true;
+             description "Pipeline metadata associating PDU with local MIP.";
+           }
+           leaf macAddress {
+             type yang:mac-address ;
+             mandatory true;
+           }
+         }
+
+        } // case mip
+
+       } //mep-or-mip
+       } // meg
+
+
+       list G.8113.1_MEG {
+         key "resource-id";
+
+         uses "of-config:OFResourceType" ;
+
+         leaf index {
+           type uint32;
+           description "The object indicates the index of the MEG";
+         }
+         leaf nameFormat {
+           type uint16;
+           description "ICC name format, only permissible value is 0.";
+           default 0;
+         }
+         leaf name {
+           type string {
+             length "1..14";
+           }
+           mandatory true;
+           description "The object indicates the name of the MEG";
+         }
+         leaf managedInstanceType {
+           type enumeration {
+             enum "section" {
+               value 0;
+               description "Type is MPLS-TP Section (between MPLS LSRs).";
+             }
+             enum "lsp" {
+               value 1;
+               description "Type is an end-to-end LSP (between MPLS LERs).";
+             }
+             enum "pw" {
+               value 2;
+               description "Type is an end-to-end Single-Segment
+               Pseudowire (SS-PW) or MS-PW (between T-PEs).";
+             }       
+           }
+           mandatory true;
+           description "The object indicates the layer of the MEG";
+         }
+         leaf mipCreation {
+           type mip-creation;
+           default "automatic";
+         }
+
+         choice mep-or-mip {
+
+         case mep {
+
+         container Local_MEP {
+           description "G.8113.1 Local MEP";
+           leaf openFlowMpId {
+             type openflow-mp-id ;
+             mandatory true;
+           }
+           leaf serveropenFlowMpId {
+             description "Identifies the server layer MEP for LCK and AIS for PW or LSP.";
+             type openflow-mp-id ;
+             mandatory true;
+           } 
+           leaf mepId {
+             type uint16 {
+               range "0..8191" ;
+             }
+             mandatory true;
+             description "Local MEP identity.";
+           }
+           leaf direction {
+             type direction ;
+             default "down";
+             description "Only down MEPs supported.";
+           }
+           leaf enable {
+             type boolean;
+             default false;
+           }
+
+           container CCM {
+             description "CCM configuration.";
+             uses "ccm-grouping";
+
+             leaf phb {
+               type priority;
+               default "CS7";
+             }
+
+           }
+
+           list LB {
+             key "instance";
+             description "Loopback configuration.";
+             leaf instance {
+               type uint32;
+               description "Loopback instance.";
+               mandatory true;
+             }
+             uses "lb-grouping";
+
+             leaf phb {
+               type priority;
+               default "CS7";
+             }
+
+             leaf ttl {
+               type uint8;
+               default 10;
+             }
+
+             leaf mipICC {
+               type string {
+                 length "0..6";
+               }
+               mandatory true;
+             }
+           }
+
+           list TST {
+             key "instance";
+             leaf instance {
+               type uint32;
+               mandatory true;
+               description "Test instance.";
+             }
+             uses "tst-grouping";
+
+             leaf phb {
+               type priority;
+               default "CS7";
+             }
+
+           }
+
+           container AIS {
+             description "Alarm indication suppression message configuration.";
+             uses "lck-csf-ais-grouping";
+
+             leaf phb {
+               type priority;
+               default "CS7";
+             }
+
+           }
+
+           container LCK {
+             description "Lock report message configuration.";
+             uses "lck-csf-ais-grouping";
+
+             leaf phb {
+               type priority;
+               default "CS7";
+             }
+
+           }
+
+           container CSF {
+             description "Client signal fail message configuration.";
+             uses "lck-csf-ais-grouping";
+
+             leaf phb {
+               type priority;
+               default "CS7";
+             }
+
+           }
+
+           container Proactive_LM {
+             description "Proactive Loss Management configuration.";
+
+             leaf phb {
+               type priority;
+               default "CS7";
+             }
+             uses "proactive-lm-grouping";
+
+           }
+
+           container OnDemand_LM {
+             description "On Demand Loss Management configuration.";
+
+             leaf phb {
+               type priority;
+               default "CS7";
+             }
+
+             uses "on-demand-lm-grouping";
+           }
+
+           container Proactive_DM {
+             description "Proactive Delay Management configuration.";
+
+             leaf phb {
+               type priority;
+               default "CS7";
+             }
+
+             uses "proactive-dm-grouping";
+           } 
+
+           container OnDemand_DM {
+             description "On Demand Delay Measurement configuration.";
+
+             leaf phb {
+               type priority;
+               default "CS7";
+             }
+
+             uses "on-demand-dm-grouping";
+           }
+         }
+
+         list Remote_MEP {
+           key "openFlowMpId";
+           leaf openFlowMpId {
+             type openflow-mp-id;
+             mandatory true;
+           }
+           leaf mepId {
+             type uint16 ;
+             mandatory true;
+           }
+           leaf rMepId {
+             mandatory true;
+             type rmep-id ;
+           }
+         }
+
+         list Remote_MIP {
+           key "openFlowMpId";
+           leaf openFlowMpId {
+             type openflow-mp-id ;
+             mandatory true;
+             description "Pipeline metadata associating PDU with remote MEP.";
+           }
+           leaf mipId {
+             type string ;
+             mandatory true;
+           }
+         }
+
+        } // case mep
+
+        case mip {
+
+         list Local_MIP {
+           key "openFlowMpId";
+           leaf openFlowMpId {
+             type openflow-mp-id;
+             mandatory true;
+           }
+           leaf mipId {
+             type string ;
+             mandatory true;
+           }
+           leaf mipType {
+             type mip-type ;
+             mandatory true;
+           }
+           leaf nodeId {
+             type uint32 ;
+             mandatory true;
+           }
+           leaf ifNum {
+             type uint32;
+             mandatory true;
+           }
+         }
+
+        } // case mip
+
+       } //mep-or-mip
+       } // meg
+
+       list MLP_ProtectionGroup {
+         key "resource-id";
+
+         uses "of-config:OFResourceType" ;
+
+         leaf index {
+           type uint32;
+           mandatory true;
+           description "The object indicates the index of the MLP_ProtectionGroup";
+         }
+
+         leaf architecture {
+           type protection-architecture;
+           mandatory true;
+         }
+
+         leaf scheme{
+           type protection-scheme ;
+           mandatory true;
+         }
+
+         leaf name {
+           type string ;
+           mandatory true;
+           description "The object indicates the name of the MLP_ProtectionGroup";
+         }
+
+         leaf revertive {
+           type boolean ;
+           default true;
+         }
+
+         leaf waitToRestore {
+           type uint16;
+           default "5";
+           description "Units are in minutes.";
+         }
+
+         leaf adminStatus {
+           type enumeration {
+             enum "disable" {
+               value 0;
+             }
+             enum "enable" {
+               value 1;
+             }
+           }
+           default "disable";
+         }
+
+         leaf holdOffTimer {
+           type uint16;
+           description "Units are in in seconds";
+           mandatory true;
+         }
+
+         leaf layer {
+           type enumeration {
+             enum "pw" {
+               value 0;
+               description "The object indicates protection at the pw (vc) level";
+             }
+             enum "lsp" {
+               value 1;
+               description "The object indicates protection at the path (tunnel) level";
+             }
+           }
+           default "lsp";
+         }
+
+         leaf psCommand {
+           type enumeration {
+             enum "noCmd" {
+               value 1;
+             }
+             enum "clear" {
+               value 2;
+             }
+             enum "lockoutOfProtection" {
+               value 3;
+             }
+             enum "forcedSwitchWorkToProtect" {
+               value 4;
+             }
+             enum "manualSwitchWorkToProtect" {
+               value 5;
+             }
+           }
+           mandatory true;
+         }
+
+         container MLP_ProtectionGroup_Status {
+           config false;
+           description "MLP Protection Group Status";
+           uses "protection-status";
+         }
+          
+         list mlp-head-end-config {
+           key "liveness-logical-port";
+           description "MLP Head End Config";
+           uses "mlp-config" ;
+           leaf liveness-logical-port {
+             type uint64;
+           }
+           leaf-list mep {
+             type leafref {
+               path "/of-config:capable-switch/of-config:resources/G.8113.1_MEG/Local_MEP/openFlowMpId" ;
+             }
+             description "MEP being protected";
+           }
+         } // mlp-head-end-config
+       } // mlp-protection-group     
+  } // augment
+
+augment "/of-config:capable-switch/of-config:logical-switches/of-config:switch/of-config:resources" {
+
+       leaf-list Ethernet_MEG {
+         type leafref {
+           path "/of-config:capable-switch/of-config:resources/Ethernet_MEG/resource-id";
+         }
+         description "Ethernet MEGs used by this logical switch.";
+       }
+       leaf-list G.8113.1_MEG {
+         type leafref {
+           path "/of-config:capable-switch/of-config:resources/G.8113.1_MEG/resource-id";
+         }
+         description "G.8113.1 MEGs used by this logical switch.";
+       }
+       leaf-list MLP_ProtectionGroup {
+         type leafref {
+           path "/of-config:capable-switch/of-config:resources/MLP_ProtectionGroup/resource-id";
+         }
+         description "MLP_ProtectionGroups used by this logical switch.";
+       }
+  } // augment
+
+}  // module
+

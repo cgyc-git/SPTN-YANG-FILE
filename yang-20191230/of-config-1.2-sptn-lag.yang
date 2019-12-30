@@ -1,0 +1,167 @@
+module of-config-1.2-sptn-lag {
+  namespace 'http://chinamobile.com.cn/sdn/sptn/sbi/schema/lag';
+  prefix "sptn-lag";
+
+  import of-config-1.2 { prefix of-config; }
+
+  organization "SPTN Working Group";
+  contact "SPTN OpenFlow Extensions";
+  description "SPTN LAG Yang Module";
+
+  revision "2019-11-18" {
+    description "initial";
+    reference "sptn openflow extensions draft";
+  }
+
+  
+  typedef lag-policy-type {
+    type enumeration {
+        enum "srcmac" {
+          value 1;
+        }
+        enum "dstmac" {
+          value 2;
+        } 
+        enum "srcdstmac" {
+          value 3;
+        }
+        enum "srcip" {
+          value 4;
+        } 
+        enum "dstip" {
+          value 5;
+        }
+        enum "srcdstip" {
+          value 6;
+        } 
+        enum "mpls-rtag7" {
+          value 7;
+        } 
+    }
+  }
+
+  typedef lag-mode-type {
+      type enumeration {
+        enum "sharing" {
+          value 1;
+        }
+        enum "non-sharing" {
+          value 2;
+        } 
+        enum "protect_1add1" {
+          value 3;
+        }
+      }
+  }
+
+  typedef lag-lacp-mode-type {
+      type enumeration {
+        enum "manual" {
+          value 1;
+        }
+        enum "static" {
+          value 2;
+        } 
+      }
+  }
+
+  typedef lag-reverse-type {
+      type enumeration {
+        enum "reverse" {
+          value 1;
+        }
+        enum "notReverse" {
+          value 2;
+        } 
+      }
+  }
+
+  typedef lag-status-type {
+    type enumeration {
+        enum "up" {
+          value 1;
+        }
+        enum "down" {
+          value 2;
+        } 
+      }
+  }
+
+  grouping OFLagType {
+	list lag {
+		key "resource-id";
+
+		description
+			"";
+		uses of-config:OFResourceType;
+	  
+		leaf lag-id {
+		  type uint32;
+		
+		  description
+			"The lag group id.";
+		}
+		
+		leaf openflow-port {
+		  type uint32;
+		  config false;
+		  description
+			"The lag openflow port.";
+		}	
+		
+		leaf description {
+		  type string;
+		
+		  description
+			"The description of lag.";
+		}
+
+		leaf lag-policy {
+		  type lag-policy-type;
+		
+		  description
+			"The lag policy.";
+		}
+		leaf lag-mode {
+		  type lag-mode-type ;
+		
+		  description
+			"The lag mode type.";
+		}
+		leaf lag-lacp-mode {
+		  type lag-lacp-mode-type;
+		
+		  description
+			"manual,static";
+		}
+		leaf lag-reverse-mode {
+		  type lag-reverse-type;
+		
+		  description
+			"reverse,unreverse";
+		}		
+		leaf-list port {
+			type leafref {
+			  path "/of-config:capable-switch/of-config:resources/of-config:port/of-config:resource-id";
+			}
+			description
+			"A resource identifier of a port of the OpenFlow Capable
+			Switch that the OpenFlow Logical Switch has exclusive access to.
+
+			Elements in this list MUST be unique. This means each
+			port element can only be referenced once.";
+		}
+		leaf lag-status {
+		  type lag-status-type;
+		
+		  description
+			"up,down";
+		}
+	}
+  }
+  
+  	augment "/of-config:capable-switch/of-config:resources" {
+      uses OFLagType;
+	}  
+
+}
